@@ -3,9 +3,11 @@ var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
+const methodOverride = require("method-override");
+
 
 var indexRouter = require("./routes/index");
-var skillRouter = require("./routes/skills");
+var skillsRouter = require("./routes/skills");
 
 var app = express();
 
@@ -18,6 +20,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+app.use(methodOverride("_method"));
+
+app.use(function (req, res, next) {
+  // Add a time property to the res.locals object
+  // The time property will then be accessible when rendering a view
+  res.locals.time = new Date().toLocaleTimeString();
+  next();
+});
 
 app.use("/", indexRouter);
 app.use("/skills", skillsRouter);
